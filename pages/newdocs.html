@@ -3237,7 +3237,7 @@ async function createNewDoc() {
     };
     if (currentFolderFilter) newDocData.folderId = currentFolderFilter;
     const docRef = await db.addDoc(newDocData);
-    const doc = await docRef.get();
+    const doc = await db.getDoc(docRef.id);
     openDoc(docRef.id, doc.data());
 }
 
