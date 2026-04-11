@@ -2901,31 +2901,30 @@ function backFromVerify() {
 function doLogin() {
     const email = document.getElementById('l-email').value;
     const pass  = document.getElementById('l-pass').value;
-    showLoginMsg('msg-login', 'Verifica in corso...', false);
+    showLoginMsg('msg-login', 'Accesso in corso...', false);
     auth.signInWithEmailAndPassword(email, pass)
-        .then(async cred => {
-            if (!cred.user.emailVerified) {
-                showLoginMsg('msg-login', 'Verifica prima la tua email.', true);
-                await auth.signOut();
-            }
-            // onAuthStateChanged handles redirect to dashboard
+        .then(() => {
+            // onAuthStateChanged handles hiding login + showing dashboard
         })
         .catch(err => showLoginMsg('msg-login', getAuthMsg(normalizeAuthError(err)), true));
 }
 function doSignup() {
     const email = document.getElementById('s-email').value;
     const pass  = document.getElementById('s-pass').value;
+    const nome  = document.getElementById('s-nome').value;
+    const cognome = document.getElementById('s-cognome').value;
+    if (!nome || !cognome || !email || !pass) {
+        showLoginMsg('msg-signup', 'Compila tutti i campi.', true); return;
+    }
     showLoginMsg('msg-signup', 'Creazione account...', false);
     auth.createUserWithEmailAndPassword(email, pass)
         .then(async res => {
             const user = res.user;
-            await db.setUser(user.uid, {
-                nome: document.getElementById('s-nome').value,
-                cognome: document.getElementById('s-cognome').value,
-                saldo: 0
+            await rtdb.ref('users/' + user.uid).set({
+                nome, cognome, saldo: 0
             });
-            await user.sendEmailVerification();
-            showVerifyScreen(email);
+            // No email verification — go straight to dashboard
+            hideLoginScreen();
         })
         .catch(err => showLoginMsg('msg-signup', getAuthMsg(normalizeAuthError(err)), true));
 }
@@ -2966,11 +2965,7 @@ auth.onAuthStateChanged(user => {
         // Not logged in — show login screen (already visible by default)
         return;
     }
-    if (!user.emailVerified) {
-        auth.signOut();
-        return;
-    }
-    // Logged in and verified — hide login, show app
+    // Logged in — hide login, show app
     hideLoginScreen();
     db.getUser(user.uid).then(doc => {
         if (doc.exists) {
