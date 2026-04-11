@@ -1509,7 +1509,7 @@
         </div>
     </div>
     <div class="user-section" id="user-trigger">
-        <img id="user-avatar" src="images/default.png" class="avatar">
+        <img id="user-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Ccircle cx='18' cy='18' r='18' fill='%23252830'/%3E%3Ccircle cx='18' cy='14' r='6' fill='%235a6272'/%3E%3Cellipse cx='18' cy='28' rx='10' ry='7' fill='%235a6272'/%3E%3C/svg%3E" class="avatar">
         <div class="dropdown" id="user-dropdown">
             <div class="dropdown-header">
                 <p id="user-name">...</p>
@@ -1566,7 +1566,7 @@
         <!-- User area -->
         <div class="sidebar-user-area">
             <div class="sidebar-user-card" id="sidebar-user-trigger" onclick="toggleSidebarUserDropdown()">
-                <img id="sidebar-user-avatar" src="images/default.png" class="sidebar-user-avatar">
+                <img id="sidebar-user-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Ccircle cx='18' cy='18' r='18' fill='%23252830'/%3E%3Ccircle cx='18' cy='14' r='6' fill='%235a6272'/%3E%3Cellipse cx='18' cy='28' rx='10' ry='7' fill='%235a6272'/%3E%3C/svg%3E" class="sidebar-user-avatar">
                 <div class="sidebar-user-info">
                     <div class="sidebar-user-name" id="sidebar-user-name">...</div>
                     <div class="sidebar-user-uid-text" id="sidebar-user-uid" title=""></div>
@@ -3002,14 +3002,7 @@ function loadFolders() {
             allFolders[f.id] = { ...f, _owned: f.uid === uid, _shared: f.uid !== uid };
         });
         renderSidebarFolders();
-    // legacy second snap replaced:
-    // shared folders now included in listenFolders
-    if (false) { const snap = { forEach: () => {} };
-            snap.forEach(doc => {
-                allFolders[doc.id] = { ...doc.data(), _shared: true };
-            });
-            renderSidebarFolders();
-        });
+    });
 }
 
 function renderSidebarFolders() {
@@ -3155,7 +3148,7 @@ function renderFileRow(container, id, data) {
         </div>
         <div class="filelist-cell filelist-cell-visto">${timeStr}</div>
         <div class="filelist-cell filelist-cell-creato">
-            <img class="filelist-creator-avatar" src="images/default.png" alt="">
+            <img class="filelist-creator-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Ccircle cx='18' cy='18' r='18' fill='%23252830'/%3E%3Ccircle cx='18' cy='14' r='6' fill='%235a6272'/%3E%3Cellipse cx='18' cy='28' rx='10' ry='7' fill='%235a6272'/%3E%3C/svg%3E" alt="">
             <span>${isMe ? 'Io' : role}</span>
         </div>
         <div class="filelist-location filelist-cell-loc">${locationHtml}</div>
