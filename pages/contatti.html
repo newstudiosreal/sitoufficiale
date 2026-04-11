@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contatti — NeW Studios</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.contact-form { display:flex;flex-direction:column;gap:16px;max-width:560px; }
+.form-group { display:flex;flex-direction:column;gap:6px; }
+.form-label { font-family:var(--font-mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim); }
+.form-input, .form-textarea {
+  background:var(--ink-2);border:1px solid var(--mist);border-radius:8px;
+  padding:12px 16px;color:var(--cream);font-family:var(--font-sans);font-size:15px;
+  outline:none;transition:border-color .2s;resize:vertical;
+}
+.form-input:focus, .form-textarea:focus { border-color:var(--gold-line); }
+.form-textarea { min-height:120px; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <a href="../index.html" class="logo"><div class="logo-mark">N</div>NeW <span>Studios</span></a>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li><li><a href="chi-siamo.html">Chi Siamo</a></li>
+    <li><a href="progetti.html">Progetti</a></li><li><a href="community.html">Community</a></li><li><a href="contatti.html" class="active">Contatti</a></li>
+  </ul>
+  <a href="contatti.html" class="nav-cta">Scrivici</a>
+  <button class="nav-mobile-btn" id="navMobileBtn"><span></span><span></span><span></span></button>
+</div></header>
+<nav class="nav-drawer" id="navDrawer"><button class="drawer-close" id="drawerClose">✕</button>
+  <a href="../index.html" class="drawer-link"><span class="drawer-link-num">00</span> Home</a>
+  <a href="chi-siamo.html" class="drawer-link"><span class="drawer-link-num">01</span> Chi Siamo</a>
+  <a href="progetti.html" class="drawer-link"><span class="drawer-link-num">02</span> Progetti</a>
+  <a href="community.html" class="drawer-link"><span class="drawer-link-num">03</span> Community</a>
+  <a href="contatti.html" class="drawer-link"><span class="drawer-link-num">04</span> Contatti</a>
+</nav>
+<main>
+  <section class="page-hero"><div class="container"><div class="page-hero-inner reveal">
+    <div class="page-eyebrow">04 · Contatti</div>
+    <h1 class="section-title" style="font-size:clamp(40px,7vw,80px);margin-bottom:24px;">Parliamo<br>insieme.</h1>
+    <p style="font-size:17px;color:var(--text);line-height:1.8;max-width:520px;">Hai un'idea, vuoi collaborare o semplicemente vuoi saperne di più su NeW Studios? Scrivici.</p>
+  </div></div></section>
+  <section style="padding:80px 0 120px;"><div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;" class="reveal">
+      <div>
+        <div class="section-tag">Scrivici</div>
+        <form class="contact-form" onsubmit="event.preventDefault();this.querySelector('button').textContent='Inviato ◆';">
+          <div class="form-group"><label class="form-label">Nome</label><input class="form-input" type="text" placeholder="Il tuo nome"></div>
+          <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="email@esempio.com"></div>
+          <div class="form-group"><label class="form-label">Messaggio</label><textarea class="form-textarea" placeholder="Dimmi tutto..."></textarea></div>
+          <button type="submit" class="btn-primary" style="align-self:flex-start">Invia Messaggio <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg></button>
+        </form>
+      </div>
+      <div>
+        <div class="section-tag">Oppure</div>
+        <div class="stat-row">
+          <div class="stat-item"><span class="stat-label">Email</span><a href="mailto:ciao@newstudios.it" style="color:var(--gold);font-size:14px;">ciao@newstudios.it</a></div>
+          <div class="stat-item"><span class="stat-label">Instagram</span><a href="https://instagram.com/" target="_blank" style="color:var(--cream);font-size:14px;">@newstudios</a></div>
+          <div class="stat-item"><span class="stat-label">Sede</span><span style="color:var(--cream);font-size:14px;">Italia</span></div>
+        </div>
+      </div>
+    </div>
+  </div></section>
+</main>
+<footer><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand"><a href="../index.html" class="logo"><div class="logo-mark">N</div>NeW <span>Studios</span></a><p class="footer-tagline">Creiamo giochi e soluzioni digitali per connettere persone.</p></div>
+    <div class="footer-col"><h5>Progetti</h5><ul><li><a href="playsummer.html">PlaySummer</a></li><li><a href="fantaprof.html">Fantaprof</a></li><li><a href="newdocs.html">NeW Docs <span class="tag-soon">presto</span></a></li></ul></div>
+    <div class="footer-col"><h5>Studio</h5><ul><li><a href="chi-siamo.html">Chi Siamo</a></li><li><a href="contatti.html">Lavora con Noi</a></li><li><a href="community.html">Community</a></li></ul></div>
+    <div class="footer-col"><h5>Legale</h5><ul><li><a href="privacy.html">Privacy Policy</a></li><li><a href="termini.html">Termini di Servizio</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><p class="footer-copy">© 2026 NeW Studios · Tutti i diritti riservati</p><span class="footer-version">v1.0.0 · NeW Studios</span></div>
+</div></footer>
+<script src="../js/main.js"></script>
+</body></html>
