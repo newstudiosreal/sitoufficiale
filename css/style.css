@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,700;0,800;0,900;1,800;1,900&family=Barlow+Condensed:wght@700;800;900&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=DM+Mono:wght@400;500&display=swap');
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -17,8 +17,8 @@
   --mist-2: rgba(240,237,216,0.03);
   --text: #b8b4a0;
   --text-dim: #5c5a50;
-  --font-sans: 'Barlow', sans-serif;
-  --font-cond: 'Barlow Condensed', sans-serif;
+  --font-sans: 'Poppins', sans-serif;
+  --font-cond: 'Poppins', sans-serif;
   --font-mono: 'DM Mono', monospace;
   --ease: cubic-bezier(.4,0,.2,1);
   --ease-spring: cubic-bezier(.34,1.56,.64,1);
@@ -88,9 +88,8 @@ section { position: relative; z-index: 1; }
 }
 .logo {
   display: flex; align-items: center; gap: 10px;
-  text-decoration: none; font-weight: 900; font-size: 17px;
+  text-decoration: none; font-weight: 800; font-size: 17px;
   color: var(--cream); letter-spacing: -0.01em;
-  font-family: var(--font-cond); text-transform: uppercase; font-size: 20px;
 }
 .logo-mark {
   width: 30px; height: 30px;
@@ -109,8 +108,8 @@ section { position: relative; z-index: 1; }
   display: flex; align-items: center; gap: 36px; list-style: none;
 }
 .nav-links a {
-  font-size: 13px; font-weight: 700; color: var(--text-dim);
-  text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase;
+  font-size: 13px; font-weight: 600; color: var(--text-dim);
+  text-decoration: none; letter-spacing: 0.02em;
   transition: color 0.2s var(--ease);
   position: relative;
 }
@@ -126,9 +125,9 @@ section { position: relative; z-index: 1; }
 .nav-links a.active::after { transform: scaleX(1); }
 
 .nav-cta {
-  font-size: 12px; font-weight: 800; color: var(--ink);
-  background: var(--gold); padding: 8px 20px; border-radius: 5px;
-  text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase;
+  font-size: 13px; font-weight: 600; color: var(--ink);
+  background: var(--gold); padding: 8px 20px; border-radius: 20px;
+  text-decoration: none; letter-spacing: 0.01em;
   transition: background 0.2s, transform 0.15s var(--ease-spring), box-shadow 0.2s;
 }
 .nav-cta:hover { background: var(--gold-2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,200,0,0.3); }
@@ -153,8 +152,8 @@ section { position: relative; z-index: 1; }
   display: flex; align-items: center; gap: 16px;
   padding: 16px 0; border-bottom: 1px solid var(--mist);
   text-decoration: none; color: var(--cream);
-  font-size: 28px; font-weight: 900; font-family: var(--font-cond);
-  letter-spacing: 0.02em; text-transform: uppercase;
+  font-size: 22px; font-weight: 800;
+  letter-spacing: -0.01em;
   transition: color 0.2s, padding-left 0.2s var(--ease);
 }
 .drawer-link:hover { color: var(--gold); padding-left: 8px; }
@@ -203,30 +202,43 @@ section { position: relative; z-index: 1; }
 .hero-eyebrow-line { width: 40px; height: 2px; background: var(--gold); }
 
 .hero-title {
-  font-family: var(--font-cond);
-  font-weight: 900;
-  font-size: clamp(72px, 11vw, 150px);
-  line-height: 0.9; letter-spacing: -0.01em;
+  font-weight: 800;
+  font-size: clamp(52px, 8vw, 96px);
+  line-height: 1.05; letter-spacing: -0.02em;
   color: var(--cream); margin-bottom: 8px;
   animation: fadeUp 0.7s 0.1s var(--ease-out) both;
-  text-transform: uppercase;
   position: relative; z-index: 1;
 }
 .hero-title em {
   font-style: italic;
   color: var(--gold);
-  -webkit-text-stroke: 0px;
   text-shadow: 0 0 60px rgba(245,200,0,0.4);
 }
 .hero-title-sub {
-  font-family: var(--font-cond);
-  font-weight: 800;
-  font-size: clamp(52px, 8vw, 112px);
-  line-height: 0.9; letter-spacing: -0.01em;
+  font-weight: 300;
+  font-size: clamp(40px, 6vw, 80px);
+  line-height: 1.0; letter-spacing: -0.02em;
   color: var(--text-dim); margin-bottom: 52px;
   animation: fadeUp 0.7s 0.18s var(--ease-out) both;
-  text-transform: uppercase;
   position: relative; z-index: 1;
+}
+
+/* ─── HERO BADGE (Aura style) ─── */
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 16px 6px 10px;
+  border-radius: 50px;
+  border: 1px solid var(--gold-line);
+  background: var(--gold-dim);
+  font-size: 0.78rem; font-weight: 600; color: var(--gold);
+  margin-bottom: 24px;
+  animation: fadeIn 0.7s both;
+  position: relative; z-index: 1;
+}
+.hero-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gold);
+  animation: pulseDot 2s ease-in-out infinite;
 }
 
 .hero-row {
@@ -245,9 +257,9 @@ section { position: relative; z-index: 1; }
 .btn-primary {
   display: inline-flex; align-items: center; gap: 10px;
   background: var(--gold); color: var(--ink);
-  font-family: var(--font-sans); font-weight: 800; font-size: 13px;
-  padding: 14px 28px; border-radius: 6px; text-decoration: none;
-  letter-spacing: 0.06em; text-transform: uppercase;
+  font-family: var(--font-sans); font-weight: 600; font-size: 14px;
+  padding: 13px 28px; border-radius: 30px; text-decoration: none;
+  letter-spacing: 0.01em;
   transition: background 0.2s, transform 0.2s var(--ease-spring), box-shadow 0.2s;
 }
 .btn-primary:hover {
@@ -259,10 +271,10 @@ section { position: relative; z-index: 1; }
 
 .btn-ghost {
   display: inline-flex; align-items: center; gap: 8px;
-  border: 2px solid var(--gold-line); color: var(--cream);
-  font-family: var(--font-sans); font-weight: 800; font-size: 13px;
-  padding: 12px 26px; border-radius: 6px; text-decoration: none;
-  letter-spacing: 0.06em; text-transform: uppercase;
+  border: 1px solid var(--gold-line); color: var(--cream);
+  font-family: var(--font-sans); font-weight: 600; font-size: 14px;
+  padding: 12px 26px; border-radius: 30px; text-decoration: none;
+  letter-spacing: 0.01em;
   transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.2s var(--ease-spring);
 }
 .btn-ghost:hover {
@@ -321,9 +333,9 @@ section { position: relative; z-index: 1; }
 .section-tag::before { content: ''; width: 24px; height: 2px; background: var(--gold); }
 
 .section-title {
-  font-family: var(--font-cond); font-weight: 900; font-size: clamp(30px, 4vw, 52px);
-  color: var(--cream); letter-spacing: -0.01em; line-height: 1.05;
-  margin-bottom: 40px; text-transform: uppercase;
+  font-weight: 800; font-size: clamp(30px, 4vw, 52px);
+  color: var(--cream); letter-spacing: -0.02em; line-height: 1.1;
+  margin-bottom: 40px;
 }
 .stat-row { display: flex; gap: 40px; flex-wrap: wrap; }
 .stat-item { display: flex; flex-direction: column; gap: 4px; }
@@ -332,7 +344,7 @@ section { position: relative; z-index: 1; }
   letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim);
 }
 .stat-value {
-  font-family: var(--font-cond); font-size: 56px; font-weight: 900;
+  font-size: 52px; font-weight: 800;
   color: var(--gold); line-height: 1; letter-spacing: -0.02em;
 }
 
@@ -379,8 +391,8 @@ section { position: relative; z-index: 1; }
 }
 .project-info { position: relative; z-index: 1; }
 .project-name {
-  font-family: var(--font-cond); font-size: 32px; font-weight: 900;
-  color: var(--cream); letter-spacing: 0.01em; text-transform: uppercase;
+  font-size: 26px; font-weight: 800;
+  color: var(--cream); letter-spacing: -0.01em;
   margin-bottom: 6px;
   transition: color 0.2s;
 }
@@ -518,9 +530,9 @@ footer {
   background: var(--gold-dim); margin-bottom: 28px;
 }
 .project-detail-title {
-  font-family: var(--font-cond); font-size: clamp(48px, 8vw, 96px); font-weight: 900;
-  color: var(--cream); letter-spacing: 0em; line-height: 0.95;
-  margin-bottom: 16px; text-transform: uppercase;
+  font-size: clamp(40px, 7vw, 80px); font-weight: 800;
+  color: var(--cream); letter-spacing: -0.02em; line-height: 1;
+  margin-bottom: 16px;
 }
 .project-detail-desc { font-size: 17px; line-height: 1.8; color: var(--text); margin-bottom: 32px; }
 .project-detail-meta { display: flex; flex-direction: column; gap: 1px; }
@@ -549,8 +561,8 @@ footer {
   background: var(--gold-dim);
 }
 .coming-soon-title {
-  font-family: var(--font-cond); font-size: 40px; font-weight: 900;
-  color: var(--cream); margin-bottom: 12px; text-transform: uppercase;
+  font-size: 36px; font-weight: 800;
+  color: var(--cream); margin-bottom: 12px; letter-spacing: -0.01em;
 }
 .coming-soon-text { font-size: 15px; color: var(--text-dim); max-width: 400px; margin: 0 auto; line-height: 1.7; }
 
@@ -598,6 +610,6 @@ footer {
   .container { padding: 0 20px; }
   .hero { padding: 100px 20px 80px; }
   .footer-grid { grid-template-columns: 1fr; }
-  .hero-title { font-size: 64px; }
-  .hero-title-sub { font-size: 44px; }
+  .hero-title { font-size: 48px; }
+  .hero-title-sub { font-size: 36px; }
 }
