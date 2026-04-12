@@ -17,32 +17,26 @@
 
     <style>
         :root {
-            /* Palette principale — grigio antracite caldo, non nero puro */
             --bg-root:      #181a1f;
             --bg-sidebar:   #1e2027;
             --bg-main:      #242830;
             --bg-card:      #2a2e38;
             --bg-hover:     #30353f;
             --bg-editor:    #1e2027;
-
             --text-main:    #e8eaf0;
             --text-secondary: #9aa0b0;
             --text-muted:   #5c6375;
-
             --gold:         #f5c800;
             --gold-dark:    #d4a800;
             --gold-glow:    rgba(245,200,0,0.2);
             --gold-subtle:  rgba(245,200,0,0.07);
             --gold-border:  rgba(245,200,0,0.15);
-
             --border:       #2e3340;
             --border-focus: rgba(245,200,0,0.4);
-
             --shadow-sm:  0 1px 4px rgba(0,0,0,0.25);
             --shadow-md:  0 4px 16px rgba(0,0,0,0.3);
             --shadow-lg:  0 12px 40px rgba(0,0,0,0.4);
             --shadow-xl:  0 24px 64px rgba(0,0,0,0.5);
-
             --radius-sm:  6px;
             --radius-md:  10px;
             --radius-lg:  16px;
@@ -252,8 +246,10 @@
         .dropdown-divider { height:1px; background:var(--border); margin:4px 0; }
 
         /* ══ DASHBOARD MAIN ══ */
+        /* FIX: dashboard-view occupa tutto lo spazio rimanente */
         #dashboard-view {
             display:flex; height:100%; animation:fadeIn 0.25s ease;
+            flex:1; min-width:0;
         }
         #dashboard-main {
             flex:1; overflow-y:auto; background:var(--bg-main); min-width:0;
@@ -334,13 +330,13 @@
         /* ══ EDITOR ══ */
         #editor-view {
             display:none; height:100%; flex-direction:column; overflow:hidden;
+            flex:1; min-width:0;
         }
         #editor-main {
             flex:1; overflow-y:auto; background:var(--bg-main);
             display:flex; flex-direction:column; align-items:center; padding:24px 20px;
         }
 
-        /* Read-only banner */
         #readonly-banner {
             display:none; padding:8px 20px;
             background:rgba(212,168,0,0.08); border-bottom:1px solid rgba(212,168,0,0.2);
@@ -513,30 +509,6 @@
         }
         .modal-btn-close:hover { border-color:var(--border-focus); }
 
-        /* Search results (collab) */
-        .search-results {
-            background:var(--bg-root); border-radius:var(--radius-sm);
-            margin-top:5px; max-height:160px; overflow-y:auto;
-            border:1px solid var(--border); display:none; box-shadow:var(--shadow-md);
-        }
-        .search-item {
-            padding:10px 12px; cursor:pointer; border-bottom:1px solid var(--border);
-            font-size:13px; transition:var(--transition);
-        }
-        .search-item:last-child { border-bottom:none; }
-        .search-item:hover { background:var(--gold-subtle); }
-        .collab-list { margin-top:18px; border-top:1px solid var(--border); padding-top:14px; }
-        .collab-user {
-            display:flex; justify-content:space-between; align-items:center;
-            margin-bottom:10px; font-size:13px; padding:8px 10px;
-            border-radius:var(--radius-sm); background:var(--bg-hover);
-        }
-        .public-link-box {
-            margin-top:18px; padding:16px;
-            background:var(--gold-subtle); border-radius:var(--radius-md);
-            border:1px dashed var(--gold-border);
-        }
-
         /* Folder modal */
         .folder-color-picker { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 20px; }
         .folder-color-swatch {
@@ -696,14 +668,6 @@
             font-family:'Poppins',sans-serif; transition:var(--transition); border:none;
         }
 
-        /* Folder share modal */
-        #folder-share-modal {
-            display:none; position:fixed; inset:0;
-            background:rgba(0,0,0,0.5); z-index:4000;
-            justify-content:center; align-items:center;
-            backdrop-filter:blur(8px); animation:fadeIn 0.2s ease;
-        }
-
         /* Scrollbar in dashboard */
         #dashboard-main { scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
 
@@ -827,7 +791,6 @@
         .login-footer a { font-size:12px; color:var(--text-muted); text-decoration:none; transition:color 0.2s; }
         .login-footer a:hover { color:var(--gold); }
 
-        /* verify */
         #login-verify { display:none; }
         .verify-icon {
             width:52px; height:52px; border-radius:var(--radius-md);
@@ -886,7 +849,6 @@
             <button class="login-tab" id="ltab-signup" onclick="switchLoginTab('signup')">Registrati</button>
         </div>
 
-        <!-- LOGIN -->
         <div id="login-panel">
             <div class="login-header"><h2>Bentornato 👋</h2><p>Inserisci le credenziali per accedere</p></div>
             <div id="msg-login" class="login-message"></div>
@@ -898,7 +860,6 @@
             <div class="login-footer"><a href="#" onclick="forgotPassword(event)">Password dimenticata?</a></div>
         </div>
 
-        <!-- SIGNUP -->
         <div id="signup-panel" style="display:none;">
             <div class="login-header"><h2>Crea Account</h2><p>Entra nell'ecosistema NeW Studios</p></div>
             <div id="msg-signup" class="login-message"></div>
@@ -914,7 +875,6 @@
             <p class="login-legal">Registrandoti accetti i <a href="termini.html">Termini</a> e la <a href="privacy.html">Privacy Policy</a>.</p>
         </div>
 
-        <!-- VERIFY -->
         <div id="login-verify">
             <div class="verify-icon"><i class="fa-regular fa-envelope-open"></i></div>
             <div class="login-header" style="text-align:center;"><h2>Verifica la email</h2><p>Abbiamo inviato un link di conferma a</p></div>
@@ -982,7 +942,11 @@
         </button>
 
         <div style="margin-top:14px;">
-            <div class="sidebar-label"><span>Cartelle</span></div>
+            <div class="sidebar-label">
+                <span>Cartelle</span>
+                <!-- FIX: rimosso pulsante "Rimuovi" — era un bottone di aggiunta cartella con testo sbagliato -->
+                <button onclick="openFolderModal()" title="Nuova cartella"><i class="fas fa-plus"></i></button>
+            </div>
         </div>
         <div class="folders-scroll" id="sidebar-folders-list"></div>
 
@@ -1037,6 +1001,7 @@
             <i class="fas fa-lock"></i> Documento in sola lettura — File .ndxs (NeW Docs Sealed)
         </div>
         <div id="editor-main">
+            <!-- FIX: rimosso pulsante collaborazione (fa-user-plus) dalla toolbar -->
             <div class="toolbar" id="main-toolbar">
                 <select id="font-family" onchange="execCmd('fontName', this.value)" title="Carattere">
                     <option value="Poppins">Poppins</option>
@@ -1068,7 +1033,6 @@
                 <div class="toolbar-divider"></div>
                 <button onclick="openImageModal()" title="Inserisci immagine"><i class="fas fa-image"></i></button>
                 <div class="toolbar-divider"></div>
-                <button onclick="openCollabModal()" title="Collaborazione"><i class="fas fa-user-plus"></i></button>
                 <button onclick="exportDoc()" title="Esporta"><i class="fas fa-file-export"></i></button>
                 <button id="btn-delete" onclick="deleteDoc()" title="Elimina" class="danger"><i class="fas fa-trash"></i></button>
             </div>
@@ -1080,40 +1044,6 @@
         </div>
     </div>
 
-</div>
-
-<!-- COLLAB MODAL -->
-<div id="collab-modal" class="modal-overlay" onclick="closeCollabModal(event)">
-    <div class="modal-box" onclick="event.stopPropagation()">
-        <h3>Collaborazione</h3>
-        <div class="public-link-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <div>
-                    <span style="font-weight:600; font-size:13px; display:block;">Rendi pubblico</span>
-                    <span style="font-size:11px; color:var(--text-muted);">Chiunque può visualizzare con il link</span>
-                </div>
-                <input type="checkbox" id="public-check" onchange="togglePublic()">
-            </div>
-            <div id="public-url-container" style="display:none;">
-                <input type="text" id="public-url-input" readonly class="modal-input" style="font-size:11px; margin-top:4px;">
-            </div>
-        </div>
-        <p style="font-size:12px; color:var(--text-secondary); margin:16px 0 8px; font-weight:500;">Aggiungi collaboratore</p>
-        <input type="text" id="user-search-input" placeholder="Cerca per nome e cognome..." class="modal-input">
-        <div id="search-results" class="search-results"></div>
-        <div id="role-selector" style="display:none; margin-top:12px; background:var(--gold-subtle); padding:12px; border-radius:var(--radius-sm);">
-            <p id="selected-user-display" style="font-weight:600; font-size:13px; margin-bottom:10px;"></p>
-            <div style="display:flex; gap:8px;">
-                <select id="collab-role" style="flex:1; padding:7px 10px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-root); color:var(--text-main); font-family:'Poppins',sans-serif; font-size:12px; outline:none;">
-                    <option value="Editor">Editor</option>
-                    <option value="Visualizzatore">Visualizzatore</option>
-                </select>
-                <button onclick="addCollaborator()" style="background:var(--gold); color:#0a0a0a; border:none; padding:7px 18px; border-radius:var(--radius-sm); font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; font-size:12px;">Aggiungi</button>
-            </div>
-        </div>
-        <div class="collab-list" id="active-collabs-list"></div>
-        <button class="modal-btn-close" onclick="document.getElementById('collab-modal').style.display='none'">Chiudi</button>
-    </div>
 </div>
 
 <!-- FOLDER MODAL -->
@@ -1133,35 +1063,7 @@
 <!-- FOLDER CONTEXT MENU -->
 <div id="folder-ctx-menu" class="folder-ctx-menu" style="display:none;">
     <div class="folder-ctx-item" onclick="folderCtxEdit()"><i class="fas fa-pencil"></i> Rinomina / Colore</div>
-    <div class="folder-ctx-item" onclick="folderCtxShare()"><i class="fas fa-user-plus"></i> Condividi</div>
     <div class="folder-ctx-item danger" onclick="folderCtxDelete()"><i class="fas fa-trash"></i> Elimina</div>
-</div>
-
-<!-- FOLDER SHARE MODAL -->
-<div id="folder-share-modal" onclick="if(event.target===this)closeFolderShareModal()">
-    <div class="modal-box" onclick="event.stopPropagation()" style="max-width:420px;">
-        <h3>Condividi cartella</h3>
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:18px; padding:10px 12px; background:var(--gold-subtle); border-radius:var(--radius-sm); border:1px solid var(--gold-border);">
-            <div id="folder-share-dot" style="width:10px;height:10px;border-radius:50%;flex-shrink:0;"></div>
-            <span id="folder-share-name" style="font-weight:600; font-size:14px;"></span>
-            <span style="font-size:11px; color:var(--text-muted); margin-left:auto;">Cartella</span>
-        </div>
-        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:8px; font-weight:500;">Aggiungi collaboratore</p>
-        <input type="text" id="folder-share-search" placeholder="Cerca per nome e cognome..." class="modal-input" oninput="folderShareSearch(this.value)">
-        <div id="folder-share-search-results" class="search-results"></div>
-        <div id="folder-share-role-selector" style="display:none; margin-top:12px; background:var(--gold-subtle); padding:12px; border-radius:var(--radius-sm);">
-            <p id="folder-share-selected-user" style="font-weight:600; font-size:13px; margin-bottom:10px;"></p>
-            <div style="display:flex; gap:8px;">
-                <select id="folder-share-role" style="flex:1; padding:7px 10px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-root); color:var(--text-main); font-family:'Poppins',sans-serif; font-size:12px; outline:none;">
-                    <option value="Editor">Editor</option>
-                    <option value="Visualizzatore">Visualizzatore</option>
-                </select>
-                <button onclick="addFolderCollaborator()" style="background:var(--gold); color:#0a0a0a; border:none; padding:7px 18px; border-radius:var(--radius-sm); font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; font-size:12px;">Aggiungi</button>
-            </div>
-        </div>
-        <div id="folder-share-collabs-list" style="margin-top:16px; border-top:1px solid var(--border); padding-top:14px;"></div>
-        <button class="modal-btn-close" onclick="closeFolderShareModal()">Chiudi</button>
-    </div>
 </div>
 
 <!-- IMAGE MODAL -->
@@ -1275,7 +1177,12 @@ const db = {
         });
         return results.slice(0, 5);
     },
-    addDoc: async (data) => { const ref = rtdb.ref('documents').push(); await ref.set({ ...data, id: ref.key }); return { id: ref.key }; },
+    // FIX: addDoc ora include correttamente uid e collaborators con ruolo Proprietario
+    addDoc: async (data) => {
+        const ref = rtdb.ref('documents').push();
+        await ref.set({ ...data, id: ref.key });
+        return { id: ref.key };
+    },
     getDoc: (id) => rtdb.ref(`documents/${id}`).once('value').then(s => ({ exists: s.exists(), data: () => s.val(), id: s.key })),
     updateDoc: (id, data) => rtdb.ref(`documents/${id}`).update(data),
     deleteDoc: (id) => rtdb.ref(`documents/${id}`).remove(),
@@ -1285,7 +1192,10 @@ const db = {
             const docs = [];
             snap.forEach(child => {
                 const d = child.val();
-                if (d && (d.uid === uid || (d.collaborators && d.collaborators[uid]))) docs.push({ id: child.key, ...d });
+                // FIX: controlla sia uid diretto che collaborators
+                if (d && (d.uid === uid || (d.collaborators && d.collaborators[uid]))) {
+                    docs.push({ id: child.key, ...d });
+                }
             });
             callback(docs);
         });
@@ -1321,7 +1231,6 @@ const turndownService = new TurndownService();
 let currentDocId = null;
 let saveTimeout = null;
 let currentMode = 'visual';
-let tempSelectedUser = null;
 let isReadOnly = false;
 let pendingAdxPayload = null;
 let pendingAdxFormat = null;
@@ -1348,10 +1257,6 @@ window.addEventListener('click', (e) => {
         const dd = document.getElementById('sidebar-user-dropdown');
         if (dd) dd.style.display = 'none';
     }
-    if (!e.target.closest('#folder-share-search') && !e.target.closest('#folder-share-search-results')) {
-        const r = document.getElementById('folder-share-search-results');
-        if (r) r.style.display = 'none';
-    }
     document.querySelectorAll('.doc-folder-popup').forEach(el => el.remove());
 });
 
@@ -1377,97 +1282,6 @@ function filterDocsFromSidebar(q) { searchQuery = q.toLowerCase(); renderFileLis
 // ── FONT SIZE ──
 function changeFontSize(size) {
     if (currentMode === 'visual') { document.getElementById('visual-editor').style.fontSize = size + 'px'; autoSave(); }
-}
-
-// ── PUBLIC ──
-async function togglePublic() {
-    const isPublic = document.getElementById('public-check').checked;
-    document.getElementById('public-url-container').style.display = isPublic ? 'block' : 'none';
-    if (isPublic) document.getElementById('public-url-input').value = `${location.origin}${location.pathname}?doc=${currentDocId}`;
-    await db.updateDoc(currentDocId, { isPublic });
-}
-
-// ── USER SEARCH (collab) ──
-document.getElementById('user-search-input').addEventListener('input', async (e) => {
-    const val = e.target.value.trim();
-    const box = document.getElementById('search-results');
-    if (val.length < 2) { box.style.display = 'none'; return; }
-    const users = await db.searchUsers(val);
-    box.innerHTML = '';
-    if (!users.length) {
-        box.innerHTML = '<div class="search-item" style="color:var(--text-muted);">Nessun utente trovato</div>';
-    } else {
-        users.forEach(u => {
-            const div = document.createElement('div');
-            div.className = 'search-item';
-            div.style.cssText = 'display:flex;align-items:center;gap:10px;';
-            div.innerHTML = `<img src="${u.profileImage||'images/default.png'}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--border);"><span>${u.nome} ${u.cognome}</span>`;
-            div.onclick = () => {
-                tempSelectedUser = { id: u.id, name: `${u.nome} ${u.cognome}` };
-                document.getElementById('selected-user-display').textContent = tempSelectedUser.name;
-                document.getElementById('role-selector').style.display = 'block';
-                box.style.display = 'none';
-                e.target.value = '';
-            };
-            box.appendChild(div);
-        });
-    }
-    box.style.display = 'block';
-});
-
-async function addCollaborator() {
-    if (!tempSelectedUser || !currentDocId) return;
-    const role = document.getElementById('collab-role').value;
-    await db.updateDoc(currentDocId, { [`collaborators/${tempSelectedUser.id}`]: role });
-    tempSelectedUser = null;
-    document.getElementById('role-selector').style.display = 'none';
-    document.getElementById('user-search-input').value = '';
-    renderCollabsList();
-}
-
-async function updateCollaboratorRole(uid, newRole) {
-    if (!currentDocId) return;
-    await db.updateDoc(currentDocId, { [`collaborators/${uid}`]: newRole });
-    renderCollabsList();
-}
-
-async function removeCollaborator(uid) {
-    if (!currentDocId) return;
-    if (confirm('Rimuovere questo collaboratore?')) {
-        await db.updateDoc(currentDocId, { [`collaborators/${uid}`]: null });
-        renderCollabsList();
-    }
-}
-
-async function renderCollabsList() {
-    const doc = await db.getDoc(currentDocId);
-    const listDiv = document.getElementById('active-collabs-list');
-    const data = doc.data();
-    document.getElementById('public-check').checked = data.isPublic || false;
-    document.getElementById('public-url-container').style.display = data.isPublic ? 'block' : 'none';
-    if (data.isPublic) document.getElementById('public-url-input').value = `${location.origin}${location.pathname}?doc=${currentDocId}`;
-    listDiv.innerHTML = '<p style="font-weight:600;font-size:12px;margin-bottom:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;">Collaboratori</p>';
-    const collabs = data.collaborators || {};
-    for (const [uid, role] of Object.entries(collabs)) {
-        const uDoc = await db.getUser(uid);
-        let name = uid, photo = 'images/default.png';
-        if (uDoc.exists) { const d = uDoc.data(); name = `${d.nome} ${d.cognome}`; photo = d.profileImage || photo; }
-        const isOwner = role === 'Proprietario';
-        let ctrl = isOwner
-            ? `<span style="font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:var(--gold-subtle);color:var(--gold);">${role}</span>`
-            : `<div style="display:flex;align-items:center;gap:8px;"><select onchange="updateCollaboratorRole('${uid}',this.value)" style="font-size:10px;padding:4px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg-root);color:var(--text-main);outline:none;"><option value="Editor" ${role==='Editor'?'selected':''}>Editor</option><option value="Visualizzatore" ${role==='Visualizzatore'?'selected':''}>Visualizzatore</option></select><button onclick="removeCollaborator('${uid}')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:12px;"><i class="fas fa-trash"></i></button></div>`;
-        listDiv.innerHTML += `<div class="collab-user"><div style="display:flex;align-items:center;gap:10px;"><img src="${photo}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--gold);"><span style="font-weight:500;">${name}</span></div>${ctrl}</div>`;
-    }
-}
-
-function openCollabModal() {
-    document.getElementById('collab-modal').style.display = 'flex';
-    renderCollabsList();
-}
-function closeCollabModal(e) {
-    if (!e || e.target === document.getElementById('collab-modal')) {
-        document.getElementById('collab-modal').style.display = 'none';
-    }
 }
 
 // ── SAVE STATUS ──
@@ -1664,19 +1478,30 @@ document.addEventListener('mousemove', (e) => { if (!resizingImg) return; const 
 document.addEventListener('mouseup', () => { if (resizingImg) { resizingImg = null; autoSave(); } });
 
 // ── AUTOSAVE ──
+// FIX: autosave completo — salva title, content, fontSize, fontFamily e aggiorna updatedAt
 function autoSave() {
-    if (isReadOnly) return;
+    if (isReadOnly || !currentDocId) return;
     showSaveStatus('saving');
     clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(() => {
-        if (!currentDocId) return;
+    saveTimeout = setTimeout(async () => {
         const visual = document.getElementById('visual-editor');
-        const content = currentMode === 'visual' ? turndownService.turndown(visual.innerHTML) : document.getElementById('editor-textarea').value;
-        db.updateDoc(currentDocId, {
-            title: document.getElementById('doc-title-input').value,
-            content, fontSize: visual.style.fontSize || '16px',
-            fontFamily: visual.style.fontFamily || 'Poppins', updatedAt: db.now()
-        }).then(() => showSaveStatus('saved'));
+        const content = currentMode === 'visual'
+            ? turndownService.turndown(visual.innerHTML)
+            : document.getElementById('editor-textarea').value;
+        const title = document.getElementById('doc-title-input').value || 'Senza titolo';
+        try {
+            await db.updateDoc(currentDocId, {
+                title,
+                content,
+                fontSize: visual.style.fontSize || '16px',
+                fontFamily: visual.style.fontFamily || 'Poppins',
+                updatedAt: db.now()
+            });
+            showSaveStatus('saved');
+        } catch(e) {
+            console.error('Autosave failed:', e);
+            showSaveStatus('saving');
+        }
     }, 1000);
 }
 
@@ -1842,19 +1667,26 @@ function renderFileList() {
     });
 }
 
+// FIX: renderFileRow — rimossa la parte "Rimuovi" dalla colonna localizzazione
 function renderFileRow(container, id, data) {
     const row = document.createElement('div');
     row.className = 'filelist-row';
     row.onclick = () => openDoc(id, data);
-    row.oncontextmenu = (e) => { if (Object.keys(allFolders).length > 0) openDocFolderMenu(e, id); };
+    row.oncontextmenu = (e) => { if (Object.keys(allFolders).length > 0) { e.preventDefault(); openDocFolderMenu(e, id); } };
     const timeStr = formatRelativeTime(data.updatedAt);
-    const role = auth.currentUser ? (data.collaborators?.[auth.currentUser.uid] || '') : '';
+    const uid = auth.currentUser ? auth.currentUser.uid : null;
+    const role = uid && data.collaborators ? (data.collaborators[uid] || '') : '';
     const isMe = role === 'Proprietario';
+
+    // Colonna localizzazione: solo cartella o "I miei file"
     let locationHtml = '';
     if (data.folderId && allFolders[data.folderId]) {
         const f = allFolders[data.folderId];
         locationHtml = `<span style="width:8px;height:8px;border-radius:2px;background:${f.color};display:inline-block;flex-shrink:0;"></span> ${f.name}`;
-    } else locationHtml = `<i class="fas fa-inbox" style="opacity:0.4;"></i> I miei file`;
+    } else {
+        locationHtml = `<i class="fas fa-inbox" style="opacity:0.4;"></i> I miei file`;
+    }
+
     row.innerHTML = `
         <div class="filelist-name">
             <div class="filelist-icon"><i class="fas fa-file-lines"></i></div>
@@ -1863,7 +1695,7 @@ function renderFileRow(container, id, data) {
         <div class="filelist-cell">${timeStr}</div>
         <div class="filelist-cell">
             <img class="filelist-creator-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Ccircle cx='18' cy='18' r='18' fill='%23252830'/%3E%3Ccircle cx='18' cy='14' r='6' fill='%235a6272'/%3E%3Cellipse cx='18' cy='28' rx='10' ry='7' fill='%235a6272'/%3E%3C/svg%3E" alt="">
-            <span>${isMe ? 'Io' : role}</span>
+            <span>${isMe ? 'Io' : (role || 'Proprietario')}</span>
         </div>
         <div class="filelist-location">${locationHtml}</div>
         <div style="display:flex;justify-content:center;">
@@ -1895,7 +1727,8 @@ function rewrapImages() {
 // ── OPEN DOC ──
 function openDoc(id, data) {
     currentDocId = id; isReadOnly = false;
-    const role = data.collaborators?.[auth.currentUser?.uid];
+    const uid = auth.currentUser ? auth.currentUser.uid : null;
+    const role = uid && data.collaborators ? (data.collaborators[uid] || '') : '';
     const canEdit = role === 'Proprietario' || role === 'Editor';
     const visual = document.getElementById('visual-editor');
     visual.contentEditable = canEdit;
@@ -1917,12 +1750,19 @@ function openDoc(id, data) {
     document.getElementById('main-toolbar').style.display = 'flex';
 }
 
+// FIX: createNewDoc — include uid e collaborators correttamente così listenDocs lo trova
 async function createNewDoc() {
     if (!auth.currentUser) return;
+    const uid = auth.currentUser.uid;
     const newDocData = {
-        title:'Senza titolo', content:'', fontSize:'16px', fontFamily:'Poppins',
-        isPublic:false, updatedAt:db.now(),
-        collaborators:{ [auth.currentUser.uid]:'Proprietario' }
+        uid: uid,
+        title: 'Senza titolo',
+        content: '',
+        fontSize: '16px',
+        fontFamily: 'Poppins',
+        isPublic: false,
+        updatedAt: db.now(),
+        collaborators: { [uid]: 'Proprietario' }
     };
     if (currentFolderFilter) newDocData.folderId = currentFolderFilter;
     const docRef = await db.addDoc(newDocData);
@@ -1984,89 +1824,6 @@ async function folderCtxDelete() {
     ctxMenuFolderId = null;
 }
 
-// ── FOLDER SHARE ──
-let folderShareTempUser = null;
-function folderCtxShare() { document.getElementById('folder-ctx-menu').style.display='none'; if (!ctxMenuFolderId) return; openFolderShareModal(ctxMenuFolderId); }
-function openFolderShareModal(folderId) {
-    const f = allFolders[folderId]; if (!f) return;
-    ctxMenuFolderId = folderId;
-    document.getElementById('folder-share-dot').style.background = f.color || '#f5c800';
-    document.getElementById('folder-share-name').textContent = f.name;
-    document.getElementById('folder-share-search').value = '';
-    document.getElementById('folder-share-search-results').style.display = 'none';
-    document.getElementById('folder-share-role-selector').style.display = 'none';
-    folderShareTempUser = null;
-    document.getElementById('folder-share-modal').style.display = 'flex';
-    renderFolderShareCollabs(folderId);
-}
-function closeFolderShareModal() { document.getElementById('folder-share-modal').style.display='none'; folderShareTempUser=null; ctxMenuFolderId=null; }
-async function folderShareSearch(val) {
-    val = val.trim();
-    const box = document.getElementById('folder-share-search-results');
-    if (val.length < 2) { box.style.display='none'; return; }
-    const users = await db.searchUsers(val);
-    box.innerHTML = '';
-    if (!users.length) box.innerHTML = '<div class="search-item" style="color:var(--text-muted);">Nessun utente trovato</div>';
-    else users.forEach(u => {
-        const div = document.createElement('div');
-        div.className = 'search-item';
-        div.style.cssText = 'display:flex;align-items:center;gap:10px;';
-        div.innerHTML = `<img src="${u.profileImage||'images/default.png'}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--border);"><span>${u.nome} ${u.cognome}</span>`;
-        div.onclick = () => {
-            folderShareTempUser = { id: u.id, name: `${u.nome} ${u.cognome}` };
-            document.getElementById('folder-share-selected-user').textContent = folderShareTempUser.name;
-            document.getElementById('folder-share-role-selector').style.display = 'block';
-            box.style.display = 'none'; document.getElementById('folder-share-search').value = '';
-        };
-        box.appendChild(div);
-    });
-    box.style.display = 'block';
-}
-async function addFolderCollaborator() {
-    if (!folderShareTempUser || !ctxMenuFolderId) return;
-    const role = document.getElementById('folder-share-role').value;
-    const folderId = ctxMenuFolderId;
-    await db.updateFolder(folderId, { [`collaborators.${folderShareTempUser.id}`]: role });
-    const docs = await db.getDocsByFolder(folderId);
-    for (const doc of docs) await db.updateDoc(doc.id, { [`collaborators/${folderShareTempUser.id}`]: role });
-    folderShareTempUser = null;
-    document.getElementById('folder-share-role-selector').style.display = 'none';
-    document.getElementById('folder-share-search').value = '';
-    renderFolderShareCollabs(folderId);
-    showToast('✓ Cartella condivisa');
-}
-async function renderFolderShareCollabs(folderId) {
-    const listDiv = document.getElementById('folder-share-collabs-list');
-    listDiv.innerHTML = '<p style="font-weight:600;font-size:12px;margin-bottom:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;">Collaboratori</p>';
-    const folderDoc = await db.getFolder(folderId);
-    const data = folderDoc.data();
-    const collabs = data.collaborators || {};
-    const ownerDoc = await db.getUser(data.uid);
-    let ownerName = data.uid, ownerPhoto = 'images/default.png';
-    if (ownerDoc.exists) { const od = ownerDoc.data(); ownerName = `${od.nome} ${od.cognome}`; ownerPhoto = od.profileImage || ownerPhoto; }
-    listDiv.innerHTML += `<div class="collab-user"><div style="display:flex;align-items:center;gap:10px;"><img src="${ownerPhoto}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--gold);"><span style="font-weight:500;">${data.uid===auth.currentUser.uid?'Io':ownerName}</span></div><span style="font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:var(--gold-subtle);color:var(--gold);">Proprietario</span></div>`;
-    for (const [uid, role] of Object.entries(collabs)) {
-        const uDoc = await db.getUser(uid);
-        let name = uid, photo = 'images/default.png';
-        if (uDoc.exists) { const ud = uDoc.data(); name = `${ud.nome} ${ud.cognome}`; photo = ud.profileImage || photo; }
-        listDiv.innerHTML += `<div class="collab-user"><div style="display:flex;align-items:center;gap:10px;"><img src="${photo}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border);"><span style="font-weight:500;">${name}</span></div><div style="display:flex;align-items:center;gap:8px;"><select onchange="updateFolderCollabRole('${folderId}','${uid}',this.value)" style="font-size:10px;padding:4px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg-root);color:var(--text-main);outline:none;"><option value="Editor" ${role==='Editor'?'selected':''}>Editor</option><option value="Visualizzatore" ${role==='Visualizzatore'?'selected':''}>Visualizzatore</option></select><button onclick="removeFolderCollab('${folderId}','${uid}')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:12px;"><i class="fas fa-trash"></i></button></div></div>`;
-    }
-    if (Object.keys(collabs).length === 0) listDiv.innerHTML += `<p style="font-size:12px;color:var(--text-muted);text-align:center;padding:12px 0;">Nessun collaboratore ancora.</p>`;
-}
-async function updateFolderCollabRole(folderId, uid, newRole) {
-    await db.updateFolder(folderId, { [`collaborators.${uid}`]: newRole });
-    const docs = await db.getDocsByFolder(folderId);
-    for (const doc of docs) await db.updateDoc(doc.id, { [`collaborators/${uid}`]: newRole });
-    renderFolderShareCollabs(folderId);
-}
-async function removeFolderCollab(folderId, uid) {
-    if (!confirm('Rimuovere questo collaboratore?')) return;
-    await db.updateFolder(folderId, { [`collaborators.${uid}`]: null });
-    const docs = await db.getDocsByFolder(folderId);
-    for (const doc of docs) await db.updateDoc(doc.id, { [`collaborators/${uid}`]: null });
-    renderFolderShareCollabs(folderId);
-}
-
 function openDocFolderMenu(e, docId) {
     e.preventDefault(); e.stopPropagation();
     document.querySelectorAll('.doc-folder-popup').forEach(el => el.remove());
@@ -2087,6 +1844,20 @@ function openDocFolderMenu(e, docId) {
         item.onclick = async () => { await db.updateDoc(docId, { folderId: fid }); menu.remove(); };
         menu.appendChild(item);
     });
+    // Aggiungi opzione elimina documento
+    const divEl = document.createElement('div');
+    divEl.style.height = '1px'; divEl.style.background = 'var(--border)'; divEl.style.margin = '4px 0';
+    menu.appendChild(divEl);
+    const delItem = document.createElement('div');
+    delItem.className = 'folder-ctx-item danger';
+    delItem.innerHTML = '<i class="fas fa-trash"></i> Elimina documento';
+    delItem.onclick = async () => {
+        menu.remove();
+        if (confirm('Eliminare definitivamente questo documento?')) {
+            await db.deleteDoc(docId);
+        }
+    };
+    menu.appendChild(delItem);
     document.body.appendChild(menu);
     setTimeout(() => document.addEventListener('click', () => menu.remove(), { once: true }), 0);
 }
@@ -2112,14 +1883,16 @@ async function confirmSaveAdx() {
     closeSaveAdxModal();
     const payload = pendingAdxPayload, format = pendingAdxFormat;
     const isSealed = format === 'ndxs';
+    const uid = auth.currentUser.uid;
     const newDocData = {
+        uid: uid,
         title: payload.meta?.title || 'Documento importato',
         content: payload.content_md || '',
         fontSize: payload.meta?.font_size || '16px',
         fontFamily: payload.meta?.font_family || 'Poppins',
         isPublic: false, isSealed,
         updatedAt: db.now(),
-        collaborators: { [auth.currentUser.uid]: 'Proprietario' }
+        collaborators: { [uid]: 'Proprietario' }
     };
     if (currentFolderFilter) newDocData.folderId = currentFolderFilter;
     try {
