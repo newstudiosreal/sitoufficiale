@@ -113,15 +113,40 @@
         }
         .mode-btn.active { background:var(--gold); color:#0a0a0a; box-shadow:0 2px 8px rgba(245,200,0,0.3); }
 
+        /* ── SAVE STATUS (cloud / local) ── */
         #save-status {
-            display:none; align-items:center; gap:5px;
+            display:none; align-items:center; gap:6px;
             font-size:11px; color:var(--text-muted);
             padding:3px 10px; border-radius:20px;
             background:var(--bg-root); border:1px solid var(--border);
-            white-space:nowrap;
+            white-space:nowrap; transition:var(--transition);
         }
-        #save-status.saving { color:var(--gold); }
-        #save-status.saved  { color:#4ade80; }
+        #save-status .save-dot {
+            width:6px; height:6px; border-radius:50%;
+            background:var(--text-muted); flex-shrink:0; transition:background 0.3s;
+        }
+        #save-status.saving  { color:var(--gold); border-color:rgba(245,200,0,0.2); }
+        #save-status.saving .save-dot { background:var(--gold); animation:pulse 1s infinite; }
+        #save-status.saved   { color:#4ade80; border-color:rgba(74,222,128,0.2); }
+        #save-status.saved .save-dot { background:#4ade80; }
+        #save-status.local-only { color:#f59e0b; border-color:rgba(245,158,11,0.2); }
+        #save-status.local-only .save-dot { background:#f59e0b; }
+        #save-status.error { color:#ef4444; border-color:rgba(239,68,68,0.2); }
+        #save-status.error .save-dot { background:#ef4444; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        /* Sync badge nell'header */
+        #sync-badge {
+            display:none; align-items:center; gap:5px;
+            font-size:10px; font-weight:700; padding:3px 9px;
+            border-radius:20px; border:1px solid rgba(245,158,11,0.3);
+            background:rgba(245,158,11,0.08); color:#f59e0b;
+            cursor:pointer; transition:var(--transition);
+        }
+        #sync-badge:hover { background:rgba(245,158,11,0.15); }
+        #sync-badge.syncing { border-color:rgba(245,200,0,0.3); color:var(--gold); background:var(--gold-subtle); }
+        #sync-badge.syncing i { animation:spin 1s linear infinite; }
+        @keyframes spin { to { transform:rotate(360deg); } }
 
         .header-right { display:flex; align-items:center; gap:10px; }
 
@@ -246,7 +271,6 @@
         .dropdown-divider { height:1px; background:var(--border); margin:4px 0; }
 
         /* ══ DASHBOARD MAIN ══ */
-        /* FIX: dashboard-view occupa tutto lo spazio rimanente */
         #dashboard-view {
             display:flex; height:100%; animation:fadeIn 0.25s ease;
             flex:1; min-width:0;
@@ -302,6 +326,10 @@
             background:var(--gold-subtle); border:1px solid var(--gold-border);
             display:grid; place-items:center; color:var(--gold); font-size:11px; flex-shrink:0;
         }
+        /* Icona per doc salvati solo in locale */
+        .filelist-icon.local-icon {
+            background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.25); color:#f59e0b;
+        }
         .filelist-title {
             font-size:13px; font-weight:500; color:var(--text-main);
             white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
@@ -320,6 +348,13 @@
         .filelist-empty { padding:80px 24px; text-align:center; color:var(--text-muted); }
         .filelist-empty i { font-size:40px; margin-bottom:14px; opacity:0.2; display:block; }
         .filelist-empty p { font-size:14px; }
+
+        /* Badge "solo locale" nella riga */
+        .badge-local {
+            font-size:9px; font-weight:700; padding:1px 6px; border-radius:10px;
+            background:rgba(245,158,11,0.12); color:#f59e0b;
+            border:1px solid rgba(245,158,11,0.2); flex-shrink:0;
+        }
 
         @media (max-width:768px) {
             #sidebar { display:none; }
@@ -622,7 +657,6 @@
         .export-desc { font-size:11px; color:var(--text-muted); }
         .export-caret { color:var(--text-muted); font-size:11px; flex-shrink:0; }
         .export-spinner { width:16px; height:16px; border:2px solid rgba(245,200,0,0.25); border-top-color:var(--gold); border-radius:50%; flex-shrink:0; animation:spin 0.7s linear infinite; }
-        @keyframes spin { to { transform:rotate(360deg); } }
         .export-section-label {
             font-size:10px; font-weight:700; text-transform:uppercase;
             letter-spacing:0.08em; color:var(--text-muted); margin:14px 0 8px; padding:0 2px;
@@ -907,8 +941,18 @@
                 <button id="btn-visual" class="mode-btn active" onclick="setMode('visual')">Visuale</button>
                 <button id="btn-literal" class="mode-btn" onclick="setMode('literal')">Letterale</button>
             </div>
-            <div id="save-status"><i class="fas fa-circle" style="font-size:5px;"></i> <span id="save-text">Salvato</span></div>
+            <div id="save-status">
+                <div class="save-dot"></div>
+                <span id="save-text">Salvato</span>
+            </div>
         </div>
+    </div>
+    <div class="header-right">
+        <!-- Badge sincronizzazione pending locale → cloud -->
+        <button id="sync-badge" onclick="syncPendingDocs()" style="display:none;" title="Sincronizza documenti offline">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <span id="sync-badge-count">0</span> da sincronizzare
+        </button>
     </div>
 </header>
 
@@ -944,7 +988,6 @@
         <div style="margin-top:14px;">
             <div class="sidebar-label">
                 <span>Cartelle</span>
-                <!-- FIX: rimosso pulsante "Rimuovi" — era un bottone di aggiunta cartella con testo sbagliato -->
                 <button onclick="openFolderModal()" title="Nuova cartella"><i class="fas fa-plus"></i></button>
             </div>
         </div>
@@ -1001,7 +1044,6 @@
             <i class="fas fa-lock"></i> Documento in sola lettura — File .ndxs (NeW Docs Sealed)
         </div>
         <div id="editor-main">
-            <!-- FIX: rimosso pulsante collaborazione (fa-user-plus) dalla toolbar -->
             <div class="toolbar" id="main-toolbar">
                 <select id="font-family" onchange="execCmd('fontName', this.value)" title="Carattere">
                     <option value="Poppins">Poppins</option>
@@ -1164,6 +1206,111 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const rtdb = firebase.database();
 
+// ═══════════════════════════════════════════════════
+// ── LOCAL CACHE (localStorage) ──
+// Struttura: newdocs_cache_{uid} → { docs: {id: data}, pendingSync: [id,...] }
+// ═══════════════════════════════════════════════════
+const LOCAL_KEY = (uid) => `newdocs_cache_${uid}`;
+
+function getLocalCache(uid) {
+    try {
+        const raw = localStorage.getItem(LOCAL_KEY(uid));
+        if (!raw) return { docs: {}, pendingSync: [] };
+        return JSON.parse(raw);
+    } catch { return { docs: {}, pendingSync: [] }; }
+}
+
+function setLocalCache(uid, cache) {
+    try {
+        localStorage.setItem(LOCAL_KEY(uid), JSON.stringify(cache));
+    } catch(e) {
+        // quota exceeded — rimuovi i doc più vecchi
+        try {
+            const docs = Object.entries(cache.docs).sort((a,b)=>(a[1].updatedAt||0)-(b[1].updatedAt||0));
+            if (docs.length > 2) {
+                delete cache.docs[docs[0][0]];
+                localStorage.setItem(LOCAL_KEY(uid), JSON.stringify(cache));
+            }
+        } catch {}
+    }
+}
+
+/** Salva (o aggiorna) un documento nella cache locale */
+function saveDocToLocal(uid, docId, data, markPending = false) {
+    const cache = getLocalCache(uid);
+    cache.docs[docId] = { ...data, _localUpdatedAt: Date.now() };
+    if (markPending && !cache.pendingSync.includes(docId)) {
+        cache.pendingSync.push(docId);
+    }
+    setLocalCache(uid, cache);
+    updateSyncBadge(uid);
+}
+
+/** Rimuove un documento dalla cache locale */
+function removeDocFromLocal(uid, docId) {
+    const cache = getLocalCache(uid);
+    delete cache.docs[docId];
+    cache.pendingSync = cache.pendingSync.filter(id => id !== docId);
+    setLocalCache(uid, cache);
+    updateSyncBadge(uid);
+}
+
+/** Marca un documento come sincronizzato (rimuove da pendingSync) */
+function markDocSynced(uid, docId) {
+    const cache = getLocalCache(uid);
+    cache.pendingSync = cache.pendingSync.filter(id => id !== docId);
+    setLocalCache(uid, cache);
+    updateSyncBadge(uid);
+}
+
+/** Aggiorna il badge di sync nell'header */
+function updateSyncBadge(uid) {
+    const cache = getLocalCache(uid);
+    const count = cache.pendingSync.length;
+    const badge = document.getElementById('sync-badge');
+    document.getElementById('sync-badge-count').textContent = count;
+    badge.style.display = count > 0 ? 'flex' : 'none';
+}
+
+/** Sincronizza tutti i documenti in pending verso Firebase */
+async function syncPendingDocs() {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+    const badge = document.getElementById('sync-badge');
+    badge.classList.add('syncing');
+    badge.innerHTML = `<i class="fas fa-sync-alt"></i> Sincronizzazione...`;
+    const cache = getLocalCache(uid);
+    const pending = [...cache.pendingSync];
+    let synced = 0;
+    for (const docId of pending) {
+        const data = cache.docs[docId];
+        if (!data) { markDocSynced(uid, docId); continue; }
+        try {
+            // Controlla se esiste già su Firebase
+            const existing = await rtdb.ref(`documents/${docId}`).once('value');
+            if (existing.exists()) {
+                await rtdb.ref(`documents/${docId}`).update({
+                    title: data.title, content: data.content,
+                    fontSize: data.fontSize, fontFamily: data.fontFamily,
+                    updatedAt: data.updatedAt || Date.now()
+                });
+            } else {
+                // Nuovo documento — push con ID specifico
+                const { _localUpdatedAt, ...cleanData } = data;
+                await rtdb.ref(`documents/${docId}`).set(cleanData);
+            }
+            markDocSynced(uid, docId);
+            synced++;
+        } catch(e) {
+            console.warn('Sync failed for', docId, e);
+        }
+    }
+    badge.classList.remove('syncing');
+    updateSyncBadge(uid);
+    if (synced > 0) showToast(`✓ ${synced} documento${synced>1?'i':''} sincronizzato${synced>1?'i':''}`);
+}
+
+// ─────────────────────────────────────────────────────────
 const db = {
     setUser: (uid, data) => rtdb.ref(`users/${uid}`).set(data),
     getUser: (uid) => rtdb.ref(`users/${uid}`).once('value').then(s => ({ exists: s.exists(), data: () => s.val() })),
@@ -1177,30 +1324,127 @@ const db = {
         });
         return results.slice(0, 5);
     },
-    // FIX: addDoc ora include correttamente uid e collaborators con ruolo Proprietario
+
+    /**
+     * Crea un nuovo documento su Firebase E in localStorage.
+     * Se Firebase fallisce (offline), salva solo in locale e marca come pending.
+     */
     addDoc: async (data) => {
-        const ref = rtdb.ref('documents').push();
-        await ref.set({ ...data, id: ref.key });
-        return { id: ref.key };
+        const uid = data.uid;
+        // Generiamo un ID locale deterministico basato su timestamp
+        const localId = 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+
+        // Salva subito in locale con l'ID temporaneo
+        saveDocToLocal(uid, localId, { ...data, id: localId }, true);
+
+        try {
+            // Prova a salvare su Firebase
+            const ref = rtdb.ref('documents').push();
+            const firebaseId = ref.key;
+            await ref.set({ ...data, id: firebaseId });
+
+            // Successo: aggiorna locale con l'ID Firebase e rimuovi quello temporaneo
+            removeDocFromLocal(uid, localId);
+            saveDocToLocal(uid, firebaseId, { ...data, id: firebaseId }, false);
+
+            return { id: firebaseId };
+        } catch(e) {
+            console.warn('Firebase offline, doc salvato localmente:', localId);
+            return { id: localId, _localOnly: true };
+        }
     },
+
     getDoc: (id) => rtdb.ref(`documents/${id}`).once('value').then(s => ({ exists: s.exists(), data: () => s.val(), id: s.key })),
-    updateDoc: (id, data) => rtdb.ref(`documents/${id}`).update(data),
-    deleteDoc: (id) => rtdb.ref(`documents/${id}`).remove(),
+
+    /**
+     * Aggiorna un documento su Firebase E in localStorage.
+     * Se Firebase fallisce, salva in locale e marca come pending.
+     */
+    updateDoc: async (id, data) => {
+        const uid = auth.currentUser?.uid;
+        if (!uid) return;
+
+        // Aggiorna subito in locale (merge con dati esistenti)
+        const cache = getLocalCache(uid);
+        const existing = cache.docs[id] || {};
+        const merged = { ...existing, ...data, id };
+        const isLocalOnly = id.startsWith('local_');
+
+        saveDocToLocal(uid, id, merged, isLocalOnly); // pending solo se già locale
+
+        try {
+            if (isLocalOnly) {
+                // È un documento locale non ancora su Firebase — ignora update Firebase
+                return;
+            }
+            await rtdb.ref(`documents/${id}`).update(data);
+            // Successo cloud: assicurati che non sia in pending
+            markDocSynced(uid, id);
+        } catch(e) {
+            console.warn('Firebase offline, aggiornamento salvato localmente:', id);
+            // Marca come pending per sync futuro
+            const c = getLocalCache(uid);
+            if (!c.pendingSync.includes(id)) {
+                c.pendingSync.push(id);
+                setLocalCache(uid, c);
+            }
+            updateSyncBadge(uid);
+        }
+    },
+
+    deleteDoc: async (id) => {
+        const uid = auth.currentUser?.uid;
+        if (uid) removeDocFromLocal(uid, id);
+        if (!id.startsWith('local_')) {
+            try { await rtdb.ref(`documents/${id}`).remove(); } catch {}
+        }
+    },
+
+    /**
+     * Ascolta i documenti da Firebase E li unisce con quelli in locale.
+     * I documenti locali non ancora sincronizzati vengono mostrati con badge.
+     */
     listenDocs: (uid, callback) => {
+        // Prima mostra subito i doc dalla cache locale
+        const cache = getLocalCache(uid);
+        const localDocs = Object.values(cache.docs).map(d => ({ ...d, _localOnly: cache.pendingSync.includes(d.id) }));
+        if (localDocs.length > 0) callback(localDocs);
+
+        // Poi ascolta Firebase e fai merge
         const ref = rtdb.ref('documents');
         ref.on('value', snap => {
-            const docs = [];
+            const firebaseDocs = [];
             snap.forEach(child => {
                 const d = child.val();
-                // FIX: controlla sia uid diretto che collaborators
                 if (d && (d.uid === uid || (d.collaborators && d.collaborators[uid]))) {
-                    docs.push({ id: child.key, ...d });
+                    firebaseDocs.push({ id: child.key, ...d, _localOnly: false });
                 }
             });
-            callback(docs);
+
+            // Aggiorna la cache locale con i dati Firebase più recenti
+            const newCache = getLocalCache(uid);
+            firebaseDocs.forEach(doc => {
+                // Non sovrascrivere un doc locale più recente
+                const local = newCache.docs[doc.id];
+                if (!local || (doc.updatedAt || 0) >= (local.updatedAt || 0)) {
+                    newCache.docs[doc.id] = doc;
+                }
+                // Rimuovi doc locali temporanei se Firebase li ha già
+                newCache.pendingSync = newCache.pendingSync.filter(id => id !== doc.id);
+            });
+            setLocalCache(uid, newCache);
+            updateSyncBadge(uid);
+
+            // Merge: Firebase docs + doc locali pending non ancora su Firebase
+            const pendingLocalDocs = newCache.pendingSync
+                .filter(id => id.startsWith('local_') && newCache.docs[id])
+                .map(id => ({ ...newCache.docs[id], _localOnly: true }));
+
+            callback([...firebaseDocs, ...pendingLocalDocs]);
         });
         return () => ref.off('value');
     },
+
     addFolder: async (data) => { const ref = rtdb.ref('folders').push(); await ref.set({ ...data, id: ref.key }); return { id: ref.key }; },
     getFolder: (id) => rtdb.ref(`folders/${id}`).once('value').then(s => ({ exists: s.exists(), data: () => s.val(), id: s.key })),
     updateFolder: (id, data) => rtdb.ref(`folders/${id}`).update(data),
@@ -1225,6 +1469,7 @@ const db = {
     },
     now: () => Date.now()
 };
+
 const turndownService = new TurndownService();
 
 // ── STATE ──
@@ -1246,6 +1491,20 @@ let searchQuery = '';
 let resizingImg = null, resizeStartX = 0, resizeStartW = 0;
 
 document.execCommand('defaultParagraphSeparator', false, 'p');
+
+// Sincronizzazione automatica quando torna online
+window.addEventListener('online', () => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+    const cache = getLocalCache(uid);
+    if (cache.pendingSync.length > 0) {
+        showToast('🌐 Connessione ripristinata — sincronizzazione in corso...');
+        setTimeout(() => syncPendingDocs(), 1500);
+    }
+});
+window.addEventListener('offline', () => {
+    showToast('📴 Offline — i documenti vengono salvati localmente');
+});
 
 // ── GLOBAL CLICKS ──
 window.addEventListener('click', (e) => {
@@ -1285,12 +1544,14 @@ function changeFontSize(size) {
 }
 
 // ── SAVE STATUS ──
-function showSaveStatus(state) {
+function showSaveStatus(state, msg) {
     const el = document.getElementById('save-status');
     const text = document.getElementById('save-text');
     el.style.display = 'flex'; el.className = state;
     if (state === 'saving') text.textContent = 'Salvataggio...';
-    else if (state === 'saved') { text.textContent = 'Salvato'; setTimeout(() => el.style.display = 'none', 2500); }
+    else if (state === 'saved') { text.textContent = '✓ Salvato'; setTimeout(() => el.style.display = 'none', 2500); }
+    else if (state === 'local-only') { text.textContent = msg || 'Salvato in locale'; }
+    else if (state === 'error') { text.textContent = msg || 'Errore salvataggio'; }
 }
 
 // ── MODE ──
@@ -1477,8 +1738,9 @@ document.addEventListener('click', (e) => { if (!e.target.closest('.doc-image-wr
 document.addEventListener('mousemove', (e) => { if (!resizingImg) return; const dx = e.clientX - resizeStartX; resizingImg.style.width = Math.max(60, resizeStartW + dx) + 'px'; });
 document.addEventListener('mouseup', () => { if (resizingImg) { resizingImg = null; autoSave(); } });
 
-// ── AUTOSAVE ──
-// FIX: autosave completo — salva title, content, fontSize, fontFamily e aggiorna updatedAt
+// ══════════════════════════════════════════════════
+// ── AUTOSAVE: salva prima in locale, poi in cloud ──
+// ══════════════════════════════════════════════════
 function autoSave() {
     if (isReadOnly || !currentDocId) return;
     showSaveStatus('saving');
@@ -1489,20 +1751,44 @@ function autoSave() {
             ? turndownService.turndown(visual.innerHTML)
             : document.getElementById('editor-textarea').value;
         const title = document.getElementById('doc-title-input').value || 'Senza titolo';
+        const uid = auth.currentUser?.uid;
+        const docData = {
+            title, content,
+            fontSize: visual.style.fontSize || '16px',
+            fontFamily: visual.style.fontFamily || 'Poppins',
+            updatedAt: db.now()
+        };
+
+        // 1. Salva SUBITO in locale (istantaneo, garantito)
+        if (uid) {
+            const cache = getLocalCache(uid);
+            const existing = cache.docs[currentDocId] || {};
+            saveDocToLocal(uid, currentDocId, { ...existing, ...docData, id: currentDocId });
+        }
+
+        // 2. Prova a salvare su Firebase
         try {
-            await db.updateDoc(currentDocId, {
-                title,
-                content,
-                fontSize: visual.style.fontSize || '16px',
-                fontFamily: visual.style.fontFamily || 'Poppins',
-                updatedAt: db.now()
-            });
+            if (currentDocId.startsWith('local_')) {
+                // Documento locale non ancora su Firebase — mostra status
+                showSaveStatus('local-only', '📴 Salvato in locale');
+                return;
+            }
+            await db.updateDoc(currentDocId, docData);
             showSaveStatus('saved');
         } catch(e) {
-            console.error('Autosave failed:', e);
-            showSaveStatus('saving');
+            console.warn('Cloud save failed, kept local:', e);
+            showSaveStatus('local-only', '📴 Salvato in locale');
+            // Marca pending per sync futuro
+            if (uid) {
+                const c = getLocalCache(uid);
+                if (!c.pendingSync.includes(currentDocId)) {
+                    c.pendingSync.push(currentDocId);
+                    setLocalCache(uid, c);
+                    updateSyncBadge(uid);
+                }
+            }
         }
-    }, 1000);
+    }, 800); // 800ms debounce — più reattivo
 }
 
 // ── AUTH ──
@@ -1583,8 +1869,14 @@ auth.onAuthStateChanged(user => {
             if (av) document.getElementById('sidebar-user-avatar').src = av;
         }
     });
+    updateSyncBadge(user.uid);
     loadFolders();
     loadDocs();
+    // Se c'erano doc pending, prova a sincronizzare
+    setTimeout(() => {
+        const cache = getLocalCache(user.uid);
+        if (cache.pendingSync.length > 0) syncPendingDocs();
+    }, 2000);
 });
 
 // ── FOLDERS ──
@@ -1646,7 +1938,7 @@ function renderFileList() {
     const groupLabel = document.getElementById('filelist-group-label');
     container.innerHTML = '';
     let docs = [...allDocsCache];
-    if (sidebarFilter === 'recenti') docs = docs.slice(0, 10);
+    if (sidebarFilter === 'recenti') docs = docs.slice(0, 20);
     else if (sidebarFilter !== 'docs') docs = docs.filter(d => d.data.folderId === sidebarFilter);
     if (searchQuery) docs = docs.filter(d => (d.data.title || '').toLowerCase().includes(searchQuery));
 
@@ -1667,18 +1959,17 @@ function renderFileList() {
     });
 }
 
-// FIX: renderFileRow — rimossa la parte "Rimuovi" dalla colonna localizzazione
 function renderFileRow(container, id, data) {
     const row = document.createElement('div');
     row.className = 'filelist-row';
     row.onclick = () => openDoc(id, data);
-    row.oncontextmenu = (e) => { if (Object.keys(allFolders).length > 0) { e.preventDefault(); openDocFolderMenu(e, id); } };
+    row.oncontextmenu = (e) => { if (Object.keys(allFolders).length > 0 || true) { e.preventDefault(); openDocFolderMenu(e, id); } };
     const timeStr = formatRelativeTime(data.updatedAt);
     const uid = auth.currentUser ? auth.currentUser.uid : null;
     const role = uid && data.collaborators ? (data.collaborators[uid] || '') : '';
     const isMe = role === 'Proprietario';
+    const isLocalOnly = data._localOnly === true;
 
-    // Colonna localizzazione: solo cartella o "I miei file"
     let locationHtml = '';
     if (data.folderId && allFolders[data.folderId]) {
         const f = allFolders[data.folderId];
@@ -1686,11 +1977,18 @@ function renderFileRow(container, id, data) {
     } else {
         locationHtml = `<i class="fas fa-inbox" style="opacity:0.4;"></i> I miei file`;
     }
+    // Aggiungi badge "locale" se non ancora sincronizzato
+    const localBadge = isLocalOnly
+        ? `<span class="badge-local" title="Non ancora sincronizzato con il cloud"><i class="fas fa-wifi-slash" style="font-size:8px;margin-right:3px;"></i>locale</span>`
+        : '';
 
     row.innerHTML = `
         <div class="filelist-name">
-            <div class="filelist-icon"><i class="fas fa-file-lines"></i></div>
+            <div class="filelist-icon${isLocalOnly?' local-icon':''}">
+                <i class="fas ${isLocalOnly?'fa-clock':'fa-file-lines'}"></i>
+            </div>
             <span class="filelist-title">${data.title || 'Senza titolo'}</span>
+            ${localBadge}
         </div>
         <div class="filelist-cell">${timeStr}</div>
         <div class="filelist-cell">
@@ -1729,11 +2027,11 @@ function openDoc(id, data) {
     currentDocId = id; isReadOnly = false;
     const uid = auth.currentUser ? auth.currentUser.uid : null;
     const role = uid && data.collaborators ? (data.collaborators[uid] || '') : '';
-    const canEdit = role === 'Proprietario' || role === 'Editor';
+    const canEdit = !data._localOnly || role === 'Proprietario' || role === 'Editor' || id.startsWith('local_');
     const visual = document.getElementById('visual-editor');
     visual.contentEditable = canEdit;
     document.getElementById('doc-title-input').disabled = !canEdit;
-    document.getElementById('btn-delete').style.display = role === 'Proprietario' ? 'flex' : 'none';
+    document.getElementById('btn-delete').style.display = (role === 'Proprietario' || id.startsWith('local_')) ? 'flex' : 'none';
     document.getElementById('dashboard-view').style.display = 'none';
     document.getElementById('editor-view').style.display = 'flex';
     document.getElementById('readonly-banner').style.display = 'none';
@@ -1748,9 +2046,16 @@ function openDoc(id, data) {
     visual.innerHTML = marked.parse(data.content || '');
     rewrapImages(); setMode('visual');
     document.getElementById('main-toolbar').style.display = 'flex';
+
+    // Se era un documento locale pending, mostra lo status
+    if (data._localOnly) {
+        const ss = document.getElementById('save-status');
+        ss.style.display = 'flex'; ss.className = 'local-only';
+        document.getElementById('save-text').textContent = '📴 Non sincronizzato';
+    }
 }
 
-// FIX: createNewDoc — include uid e collaborators correttamente così listenDocs lo trova
+// ── CREATE NEW DOC ──
 async function createNewDoc() {
     if (!auth.currentUser) return;
     const uid = auth.currentUser.uid;
@@ -1765,8 +2070,17 @@ async function createNewDoc() {
         collaborators: { [uid]: 'Proprietario' }
     };
     if (currentFolderFilter) newDocData.folderId = currentFolderFilter;
+
+    // db.addDoc gestisce sia Firebase che fallback locale
     const docRef = await db.addDoc(newDocData);
-    openDoc(docRef.id, newDocData);
+    currentDocId = docRef.id;
+
+    openDoc(docRef.id, { ...newDocData, id: docRef.id, _localOnly: docRef._localOnly || false });
+
+    if (docRef._localOnly) {
+        showSaveStatus('local-only', '📴 Salvato in locale');
+        showToast('📴 Offline — documento salvato localmente');
+    }
 }
 
 function closeEditor() { location.reload(); }
@@ -1832,6 +2146,24 @@ function openDocFolderMenu(e, docId) {
     const x = Math.min(e.clientX, window.innerWidth - 180);
     menu.style.cssText = `position:fixed;z-index:9999;left:${x}px;top:${e.clientY+4}px;`;
     menu.innerHTML = `<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);padding:6px 12px 4px;">Sposta in cartella</div>`;
+
+    // Opzione sync se doc locale
+    const uid = auth.currentUser?.uid;
+    if (uid) {
+        const cache = getLocalCache(uid);
+        if (cache.pendingSync.includes(docId)) {
+            const syncItem = document.createElement('div');
+            syncItem.className = 'folder-ctx-item';
+            syncItem.style.color = '#f59e0b';
+            syncItem.innerHTML = '<i class="fas fa-cloud-arrow-up" style="color:#f59e0b;"></i> Sincronizza ora';
+            syncItem.onclick = () => { menu.remove(); syncPendingDocs(); };
+            menu.appendChild(syncItem);
+            const divSync = document.createElement('div');
+            divSync.style.cssText = 'height:1px;background:var(--border);margin:4px 0;';
+            menu.appendChild(divSync);
+        }
+    }
+
     const none = document.createElement('div');
     none.className = 'folder-ctx-item';
     none.innerHTML = '<i class="fas fa-times" style="color:var(--text-muted);"></i> Nessuna cartella';
@@ -1844,7 +2176,6 @@ function openDocFolderMenu(e, docId) {
         item.onclick = async () => { await db.updateDoc(docId, { folderId: fid }); menu.remove(); };
         menu.appendChild(item);
     });
-    // Aggiungi opzione elimina documento
     const divEl = document.createElement('div');
     divEl.style.height = '1px'; divEl.style.background = 'var(--border)'; divEl.style.margin = '4px 0';
     menu.appendChild(divEl);
